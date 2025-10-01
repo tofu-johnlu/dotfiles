@@ -60,5 +60,11 @@ if [ ! -d "$HOME/.oh-my-zsh/custom/themes/powerlevel9k" ]; then
     git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
 fi
 
+
+echo "Installing Factory AI CLI..."
+
+# Install Factory AI CLI
+curl -fsSL https://app.factory.ai/cli | sh
+
 echo "Package installation complete!"
 echo "Note: You may need to install additional packages depending on your needs."

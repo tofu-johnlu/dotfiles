@@ -130,6 +130,18 @@ elif [[ "$OS" == "macos" ]]; then
         echo "Skipping macOS defaults."
         echo "You can run it later with: sudo bash $MACOS_DIR/macos.sh"
     fi
+
+    echo ""
+    echo "Would you like to install Linux packages? (y/n)"
+    read -r install_packages
+
+    if [[ "$install_packages" =~ ^[Yy]$ ]]; then
+        echo "Installing Linux packages..."
+        bash "$MACOS_DIR/install-packages.sh"
+    else
+        echo "Skipping package installation."
+        echo "You can run it later with: bash $MACOS_DIR/install-packages.sh"
+    fi
 fi
 
 echo ""
