@@ -101,6 +101,9 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 # Theme
 git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
 
+# Install Hack Nerd Font
+brew install font-hack-nerd-font
+
 # Install GUI
 brew bundle --file $PWD/Brewfile
 
