@@ -7,7 +7,6 @@ cask "arc"
 cask "spotify"
 cask "raycast"
 cask "slack"
-cask "superhuman"
 cask "cursor"
 cask "linear-linear"
 
@@ -50,9 +49,7 @@ cask "tailscale-app"
 
 # Social Networks
 cask "discord"
-cask "wechat"
 cask "zoom"
-mas "LINE", id: 539883307
 
 # Web browsers
 cask "firefox"
@@ -62,9 +59,7 @@ cask "opera"
 
 # Productivity
 cask "the-unarchiver" # Unpacks archive files
-cask "notion"
 cask "vlc"
 cask "microsoft-auto-update"
 cask "microsoft-office"
 cask "microsoft-teams"
-mas "Pixelmator Pro", id: 1289583905

@@ -68,14 +68,60 @@ DOTFILES_DIR="$(pwd)"
 COMMON_DIR="$DOTFILES_DIR/common"
 
 safe_symlink "$COMMON_DIR/.gitconfig" "$HOME/.gitconfig"
-safe_symlink "$COMMON_DIR/.gitignore" "$HOME/.gitignore"
+# safe_symlink "$COMMON_DIR/.gitignore" "$HOME/.gitignore"
 safe_symlink "$COMMON_DIR/.hushlogin" "$HOME/.hushlogin"
 safe_symlink "$COMMON_DIR/.inputrc" "$HOME/.inputrc"
 safe_symlink "$COMMON_DIR/.screenrc" "$HOME/.screenrc"
 safe_symlink "$COMMON_DIR/.tmux.conf" "$HOME/.tmux.conf"
 safe_symlink "$COMMON_DIR/.zprofile" "$HOME/.zprofile"
 safe_symlink "$COMMON_DIR/.ssh/config" "$HOME/.ssh/config"
-safe_symlink "$COMMON_DIR/.config/nvim" "$HOME/.config/nvim"
+# safe_symlink "$COMMON_DIR/.config/nvim" "$HOME/.config/nvim"
+
+echo ""
+
+# Install common packages
+echo ""
+echo "Would you like to install common packages? (y/n)"
+read -r install_common_packages
+
+if [[ "$install_common_packages" =~ ^[Yy]$ ]]; then
+    echo "Installing common packages..."
+    bash "$COMMON_DIR/install-packages.sh"
+else
+    echo "Skipping common package installation."
+    echo "You can run it later with: bash $COMMON_DIR/install-packages.sh"
+fi
+
+echo ""
+
+# Install .zshrc with OS-specific customizations
+echo "Installing .zshrc..."
+backup_file "$HOME/.zshrc"
+cp "$COMMON_DIR/.zshrc" "$HOME/.zshrc"
+echo "  Copied: $COMMON_DIR/.zshrc -> $HOME/.zshrc"
+
+# Append OS-specific .zshrc content if it exists
+if [[ "$OS" == "linux" ]]; then
+    LINUX_DIR="$DOTFILES_DIR/linux"
+    if [ -f "$LINUX_DIR/.zshrc" ]; then
+        echo "" >> "$HOME/.zshrc"
+        echo "# ============================================" >> "$HOME/.zshrc"
+        echo "# Linux-specific configuration" >> "$HOME/.zshrc"
+        echo "# ============================================" >> "$HOME/.zshrc"
+        cat "$LINUX_DIR/.zshrc" >> "$HOME/.zshrc"
+        echo "  Appended Linux-specific configuration"
+    fi
+elif [[ "$OS" == "macos" ]]; then
+    MACOS_DIR="$DOTFILES_DIR/macos"
+    if [ -f "$MACOS_DIR/.zshrc" ]; then
+        echo "" >> "$HOME/.zshrc"
+        echo "# ============================================" >> "$HOME/.zshrc"
+        echo "# macOS-specific configuration" >> "$HOME/.zshrc"
+        echo "# ============================================" >> "$HOME/.zshrc"
+        cat "$MACOS_DIR/.zshrc" >> "$HOME/.zshrc"
+        echo "  Appended macOS-specific configuration"
+    fi
+fi
 
 echo ""
 
@@ -83,40 +129,50 @@ echo ""
 if [[ "$OS" == "linux" ]]; then
     echo "Installing Linux-specific dotfiles..."
     LINUX_DIR="$DOTFILES_DIR/linux"
-
-    safe_symlink "$LINUX_DIR/.zshrc" "$HOME/.zshrc"
+    # Additional Linux-specific dotfiles can be added here
 
     echo ""
-    echo "Would you like to install Linux packages? (y/n)"
+    echo "Would you like to install additional Linux packages? (y/n)"
     read -r install_packages
 
     if [[ "$install_packages" =~ ^[Yy]$ ]]; then
-        echo "Installing Linux packages..."
-        bash "$LINUX_DIR/install-packages.sh"
+        echo "Installing additional Linux packages..."
+        bash "$LINUX_DIR/brew.sh"
     else
-        echo "Skipping package installation."
-        echo "You can run it later with: bash $LINUX_DIR/install-packages.sh"
+        echo "Skipping additional Linux packages."
+        echo "You can run it later with: bash $LINUX_DIR/brew.sh"
     fi
 
 elif [[ "$OS" == "macos" ]]; then
     echo "Installing macOS-specific dotfiles..."
     MACOS_DIR="$DOTFILES_DIR/macos"
 
-    safe_symlink "$COMMON_DIR/.zshrc" "$HOME/.zshrc"
     safe_symlink "$MACOS_DIR/.zprofile" "$HOME/.zprofile.local"
     safe_symlink "$MACOS_DIR/.tmux.conf.osx" "$HOME/.tmux.conf.osx"
     safe_symlink "$MACOS_DIR/.config/aerospace" "$HOME/.config/aerospace"
 
     echo ""
-    echo "Would you like to install Homebrew packages? (y/n)"
+    echo "Would you like to install additional macOS packages? (CTF tools, etc.) (y/n)"
     read -r install_packages
 
     if [[ "$install_packages" =~ ^[Yy]$ ]]; then
-        echo "Installing Homebrew packages..."
+        echo "Installing additional macOS packages..."
         bash "$MACOS_DIR/brew.sh"
     else
-        echo "Skipping Homebrew installation."
+        echo "Skipping additional macOS packages."
         echo "You can run it later with: bash $MACOS_DIR/brew.sh"
+    fi
+
+    echo ""
+    echo "Would you like to install macOS GUI applications? (y/n)"
+    read -r install_gui
+
+    if [[ "$install_gui" =~ ^[Yy]$ ]]; then
+        echo "Installing GUI applications from Brewfile..."
+        brew bundle --file "$MACOS_DIR/Brewfile"
+    else
+        echo "Skipping GUI application installation."
+        echo "You can run it later with: brew bundle --file $MACOS_DIR/Brewfile"
     fi
 
     echo ""
@@ -129,18 +185,6 @@ elif [[ "$OS" == "macos" ]]; then
     else
         echo "Skipping macOS defaults."
         echo "You can run it later with: sudo bash $MACOS_DIR/macos.sh"
-    fi
-
-    echo ""
-    echo "Would you like to install Linux packages? (y/n)"
-    read -r install_packages
-
-    if [[ "$install_packages" =~ ^[Yy]$ ]]; then
-        echo "Installing Linux packages..."
-        bash "$MACOS_DIR/install-packages.sh"
-    else
-        echo "Skipping package installation."
-        echo "You can run it later with: bash $MACOS_DIR/install-packages.sh"
     fi
 fi
 
