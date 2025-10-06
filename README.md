@@ -1,4 +1,4 @@
-# Wadwax's Dotfiles
+# Dotfiles
 
 Cross-platform dotfiles for Linux and macOS with automatic OS detection and unified package management.
 
