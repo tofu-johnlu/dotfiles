@@ -135,4 +135,6 @@ alias tp="tmux splitw"
 alias tpv="tmux splitw -v"
 alias tph="tmux splitw -h"
 
+echo 'eval "$(~/.local/bin/mise activate zsh)"' >> ~/.zshrc
+
 #export PATH=$HOME/.nodebrew/current/bin:$PATH

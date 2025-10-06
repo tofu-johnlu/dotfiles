@@ -164,6 +164,7 @@ install_common_tools() {
         "ripgrep"
         "tree"
         "htop"
+        "mise"
     )
     
     for tool in "${tools[@]}"; do
