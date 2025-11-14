@@ -110,7 +110,17 @@ safe_symlink "$COMMON_DIR/.ssh/config" "$HOME/.ssh/config"
 
 echo ""
 
+# Install .zshrc with OS-specific customizations
+# This must be done BEFORE installing packages so that package installers can append to it
+echo "Installing .zshrc..."
+backup_file "$HOME/.zshrc"
+cp "$COMMON_DIR/.zshrc" "$HOME/.zshrc"
+echo "  Copied: $COMMON_DIR/.zshrc -> $HOME/.zshrc"
+
+echo ""
+
 # Install common packages
+# This comes AFTER .zshrc installation so packages can add their configs to it
 echo ""
 if [[ "$MANUAL_MODE" == true ]]; then
     echo "Would you like to install common packages? (y/n)"
@@ -126,14 +136,6 @@ else
     echo "Skipping common package installation."
     echo "You can run it later with: bash $COMMON_DIR/install-packages.sh"
 fi
-
-echo ""
-
-# Install .zshrc with OS-specific customizations
-echo "Installing .zshrc..."
-backup_file "$HOME/.zshrc"
-cp "$COMMON_DIR/.zshrc" "$HOME/.zshrc"
-echo "  Copied: $COMMON_DIR/.zshrc -> $HOME/.zshrc"
 
 # Append OS-specific .zshrc content if it exists
 if [[ "$OS" == "linux" ]]; then
