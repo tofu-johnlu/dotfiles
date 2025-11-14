@@ -7,6 +7,36 @@ set -e
 
 cd "$(dirname "$0")"
 
+# Default to automatic installation (no prompts)
+MANUAL_MODE=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -m|--manual)
+            MANUAL_MODE=true
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: $0 [OPTIONS]"
+            echo ""
+            echo "Dotfiles installation script with OS detection"
+            echo ""
+            echo "Options:"
+            echo "  -m, --manual    Enable manual mode (prompt for confirmations)"
+            echo "  -h, --help      Show this help message"
+            echo ""
+            echo "Default behavior: Fully automatic installation (no prompts)"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Run '$0 --help' for usage information"
+            exit 1
+            ;;
+    esac
+done
+
 # Detect OS
 detect_os() {
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -24,6 +54,7 @@ echo "=================================="
 echo "Dotfiles Installation Script"
 echo "=================================="
 echo "Detected OS: $OS"
+echo "Installation Mode: $([ "$MANUAL_MODE" = true ] && echo "Manual (with prompts)" || echo "Automatic (no prompts)")"
 echo ""
 
 if [[ "$OS" == "unknown" ]]; then
@@ -81,8 +112,12 @@ echo ""
 
 # Install common packages
 echo ""
-echo "Would you like to install common packages? (y/n)"
-read -r install_common_packages
+if [[ "$MANUAL_MODE" == true ]]; then
+    echo "Would you like to install common packages? (y/n)"
+    read -r install_common_packages
+else
+    install_common_packages="y"
+fi
 
 if [[ "$install_common_packages" =~ ^[Yy]$ ]]; then
     echo "Installing common packages..."
@@ -132,8 +167,12 @@ if [[ "$OS" == "linux" ]]; then
     # Additional Linux-specific dotfiles can be added here
 
     echo ""
-    echo "Would you like to install additional Linux packages? (y/n)"
-    read -r install_packages
+    if [[ "$MANUAL_MODE" == true ]]; then
+        echo "Would you like to install additional Linux packages? (y/n)"
+        read -r install_packages
+    else
+        install_packages="y"
+    fi
 
     if [[ "$install_packages" =~ ^[Yy]$ ]]; then
         echo "Installing additional Linux packages..."
@@ -152,8 +191,12 @@ elif [[ "$OS" == "macos" ]]; then
     safe_symlink "$MACOS_DIR/.config/aerospace" "$HOME/.config/aerospace"
 
     echo ""
-    echo "Would you like to install additional macOS packages? (CTF tools, etc.) (y/n)"
-    read -r install_packages
+    if [[ "$MANUAL_MODE" == true ]]; then
+        echo "Would you like to install additional macOS packages? (CTF tools, etc.) (y/n)"
+        read -r install_packages
+    else
+        install_packages="y"
+    fi
 
     if [[ "$install_packages" =~ ^[Yy]$ ]]; then
         echo "Installing additional macOS packages..."
@@ -164,8 +207,12 @@ elif [[ "$OS" == "macos" ]]; then
     fi
 
     echo ""
-    echo "Would you like to install macOS GUI applications? (y/n)"
-    read -r install_gui
+    if [[ "$MANUAL_MODE" == true ]]; then
+        echo "Would you like to install macOS GUI applications? (y/n)"
+        read -r install_gui
+    else
+        install_gui="y"
+    fi
 
     if [[ "$install_gui" =~ ^[Yy]$ ]]; then
         echo "Installing GUI applications from Brewfile..."
@@ -176,8 +223,12 @@ elif [[ "$OS" == "macos" ]]; then
     fi
 
     echo ""
-    echo "Would you like to set macOS defaults? (y/n)"
-    read -r set_defaults
+    if [[ "$MANUAL_MODE" == true ]]; then
+        echo "Would you like to set macOS defaults? (y/n)"
+        read -r set_defaults
+    else
+        set_defaults="y"
+    fi
 
     if [[ "$set_defaults" =~ ^[Yy]$ ]]; then
         echo "Setting macOS defaults..."
