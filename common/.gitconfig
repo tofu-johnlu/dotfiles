@@ -197,8 +197,6 @@
 [init]
 
 	defaultBranch = main
-[user]
-	name = wadwax
-	email = 22623048+wadwax@users.noreply.github.com
+
 [status]
 	showUntrackedFiles = all
