@@ -21,6 +21,9 @@ brew upgrade
 # Save Homebrew's installed location.
 BREW_PREFIX=$(brew --prefix)
 
+brew install jq
+brew install uv
+
 # Add your Linux-specific packages here
 # Example:
 # brew install git

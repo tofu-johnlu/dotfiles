@@ -110,6 +110,13 @@ safe_symlink "$COMMON_DIR/.ssh/config" "$HOME/.ssh/config"
 
 echo ""
 
+# Configure git to include gitalias
+echo "Configuring git aliases..."
+git config --global --add include.path "$COMMON_DIR/gitalias.txt"
+echo "  Added gitalias.txt to git config"
+
+echo ""
+
 # Install .zshrc with OS-specific customizations
 # This must be done BEFORE installing packages so that package installers can append to it
 echo "Installing .zshrc..."

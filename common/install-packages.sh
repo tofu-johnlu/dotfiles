@@ -107,6 +107,16 @@ install_homebrew() {
         
         # Add Homebrew to PATH based on OS
         if [[ "$OS" == "linux" ]]; then
+            # Fix permissions for Homebrew on Linux
+            echo " [ ]  Fixing Homebrew permissions..."
+            if [ -d "/home/linuxbrew/.linuxbrew" ]; then
+                sudo chown -R $(whoami) /home/linuxbrew/.linuxbrew
+                echo " [✓]  Permissions fixed for /home/linuxbrew/.linuxbrew"
+            elif [ -d "$HOME/.linuxbrew" ]; then
+                sudo chown -R $(whoami) "$HOME/.linuxbrew"
+                echo " [✓]  Permissions fixed for $HOME/.linuxbrew"
+            fi
+            
             # Check both possible Linux locations
             local brew_shellenv=""
             if [ -d "$HOME/.linuxbrew" ]; then
