@@ -20,8 +20,13 @@
 #   - Add new category files and source them below
 #   - Override aliases in your local .zshrc after sourcing this file
 
-# Get the directory where this script is located
-ALIAS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/aliases"
+# Get the directory where alias files are located
+# First try the standard location, then fall back to script's directory
+if [ -d "$HOME/.config/shellalias/aliases" ]; then
+    ALIAS_DIR="$HOME/.config/shellalias/aliases"
+else
+    ALIAS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/aliases"
+fi
 
 # Source common aliases (cross-platform)
 [ -f "$ALIAS_DIR/navigation.sh" ] && source "$ALIAS_DIR/navigation.sh"

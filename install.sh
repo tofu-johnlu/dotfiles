@@ -122,8 +122,9 @@ echo ""
 
 # Install shell alias configuration
 echo "Installing shell alias configuration..."
+mkdir -p "$HOME/.config/shellalias"
 safe_symlink "$COMMON_DIR/shellalias.sh" "$HOME/.shellalias.sh"
-# The aliases directory will be accessible through the symlinked parent directory
+safe_symlink "$COMMON_DIR/aliases" "$HOME/.config/shellalias/aliases"
 echo "  Shell aliases configured"
 
 echo ""
