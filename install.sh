@@ -120,6 +120,14 @@ echo "  Added gitalias.txt to git config"
 
 echo ""
 
+# Install shell alias configuration
+echo "Installing shell alias configuration..."
+safe_symlink "$COMMON_DIR/shellalias.sh" "$HOME/.shellalias.sh"
+# The aliases directory will be accessible through the symlinked parent directory
+echo "  Shell aliases configured"
+
+echo ""
+
 # Install .zshrc with OS-specific customizations
 # This must be done BEFORE installing packages so that package installers can append to it
 echo "Installing .zshrc..."
