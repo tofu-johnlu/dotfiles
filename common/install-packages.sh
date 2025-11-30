@@ -44,7 +44,11 @@ install_with_spinner() {
     local message="$1"
     local command="$2"
     
-    eval "$command" > /tmp/install_output_$$.log 2>&1 &
+    # Create temp files for stdout and stderr
+    local stdout_log="/tmp/install_output_$$.log"
+    local stderr_log="/tmp/install_error_$$.log"
+    
+    eval "$command" > "$stdout_log" 2> "$stderr_log" &
     local pid=$!
     show_spinner $pid "$message"
     wait $pid
@@ -52,14 +56,47 @@ install_with_spinner() {
     
     if [ $exit_code -eq 0 ]; then
         printf " [✓]  %s\n" "$message"
+        # Still show output even on success for transparency
+        if [ -s "$stdout_log" ]; then
+            cat "$stdout_log"
+        fi
     else
-        printf " [✗]  %s (Failed!)\n" "$message"
-        echo "Error log:"
-        cat /tmp/install_output_$$.log
-        rm -f /tmp/install_output_$$.log
-        return $exit_code
+        printf " [✗]  %s (Failed with exit code: %d)\n" "$message" "$exit_code"
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Error Output:"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        if [ -s "$stderr_log" ]; then
+            cat "$stderr_log"
+        fi
+        if [ -s "$stdout_log" ]; then
+            cat "$stdout_log"
+        fi
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
     fi
-    rm -f /tmp/install_output_$$.log
+    
+    rm -f "$stdout_log" "$stderr_log"
+    return $exit_code
+}
+
+# Fix dpkg issues on Debian/Ubuntu systems
+fix_dpkg_issues() {
+    if ! command -v dpkg &> /dev/null; then
+        return 0
+    fi
+    
+    # Check if dpkg is in a broken state
+    if ! dpkg --audit &> /dev/null; then
+        echo " [ ]  Detected dpkg issues, attempting to fix..."
+        if sudo dpkg --configure -a; then
+            echo " [✓]  dpkg issues fixed"
+        else
+            echo " [✗]  Failed to fix dpkg issues"
+            echo "      Please run 'sudo dpkg --configure -a' manually and try again"
+            return 1
+        fi
+    fi
 }
 
 # Install build dependencies for Homebrew on Linux
@@ -73,6 +110,8 @@ install_linux_build_deps() {
     
     # Detect package manager and install build tools
     if command -v apt-get &> /dev/null; then
+        # Fix any dpkg issues first
+        fix_dpkg_issues || return 1
         install_with_spinner "Installing build tools (Debian/Ubuntu)" "sudo apt-get update && sudo apt-get install -y build-essential procps curl file git"
     elif command -v dnf &> /dev/null; then
         # Check if Fedora or CentOS/RHEL

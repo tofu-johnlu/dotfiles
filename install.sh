@@ -66,7 +66,10 @@ fi
 backup_file() {
     local file=$1
     if [ -e "$file" ] || [ -L "$file" ]; then
-        local backup="${file}.backup.$(date +%Y%m%d_%H%M%S)"
+        local backup_dir="$HOME/.backup"
+        mkdir -p "$backup_dir"
+        local basename=$(basename "$file")
+        local backup="$backup_dir/${basename}.backup.$(date +%Y%m%d_%H%M%S)"
         echo "  Backing up existing $file to $backup"
         mv "$file" "$backup"
     fi
